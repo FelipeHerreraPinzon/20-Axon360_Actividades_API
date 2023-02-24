@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <title>Axon360</title>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+
+    <link rel="shortcut icon" href="assets/favicon_axon.jpg">
+</head>
+
+<body class="bg bg-primary">
+    <nav class="navbar navbar-expand navbar-light bg-light">
+        <div class="nav navbar-nav">
+            <a class="nav-item nav-link active" href="index.html"> <img src="assets/axon.png" alt="" width="30"> AXON 360<span class="visually-hidden">(current)</span></a>
+            <a class="nav-item nav-link" href="actividades.html"><i class="fa-solid fa-briefcase"></i> Actividades</a>
+        </div>
+    </nav>
+  
+  <div class="container mt-3">
+    <div class="row">
+
+
+        
+               <!-- Modal Body -->
+        <!-- if you want to close by clicking outside the modal, delete the last endpoint:data-bs-backdrop and data-bs-keyboard -->
+        <div class="modal fade" id="moda" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+                <div class="modal-content">
+
+
+                    <form action="javascript:void(0);" method="post" onsubmit="aplicacion.Actualizar()">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitleId">ACTUALIZAR ACTIVIDAD</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      
+                        
+
+                        <div class="mb-3 mt-3">
+                           <!--<label for="" class="form-label">ID</label> --> 
+                            <input type="hidden" class="form-control" name="idEditar" id="idEditar" readonly>
+                        </div>
+
+                        <div class="mb-3 mt-3">
+                            <label class="form-label">NOMBRE ACTIVIDAD</label>
+                            <input type="text" class="form-control" name="actividadEditar" id="actividadEditar" required>
+                        </div>
+
+                        
+                    </div>
+                    <div class="modal-footer">
+                       
+                        <button type="submit" class="btn btn-success">Actualizar</button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+        
+        
+
+        <div class="col-md-5">
+
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fa-solid fa-briefcase"></i>  REGISTRO ACTIVIDADES
+                </div>
+                <div class="card-body">
+                    
+                    <form action="javascript:void(0);" method="post" id="form" onsubmit="aplicacion.Agregar()">
+
+                        <div class="mb-3 mt-2">
+                          <label for="" class="form-label"><i class="fa-solid fa-briefcase"></i> ACTIVIDAD</label>
+                          <input type="text" class="form-control" name="nombre_actividad" id="nombre_actividad" placeholder="INGRESA ACTIVIDAD" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-success" >AGREGAR ACTIVIDAD</button>
+
+
+                    </form>
+
+
+                </div>
+                <div class="card-footer text-muted">
+                    
+                </div>
+            </div>
+
+        </div> 
+
+
+
+        <div class="col-md-7">
+
+            
+                <table class="table table-primary table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                             <th scope="col">ACTIVIDAD</th>
+                            <th scope="col">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody id="actividades">
+                        
+                        
+                    
+                    </tbody>
+                </table>
+            </div>
+            
+           </div> 
+    
+      </div>
+
+
+
+
+      <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+
+
+
+
+
+
+<script>
+
+    var url="https://axon360-registro-ingreso.000webhostapp.com/API/actividades/";
+    
+    var modaledit = new bootstrap.Modal(document.getElementById('moda'), {Keyboard:false})
+   
+
+    var aplicacion = new function(){
+
+        this.idEditar= document.getElementById("idEditar");
+        this.actividadEditar= document.getElementById("actividadEditar");
+      
+
+        this.nombre_actividad= document.getElementById("nombre_actividad");
+        
+
+        this.actividades = document.getElementById("actividades");
+
+        this.Leer = function(){
+
+            var datos = "";
+
+            fetch(url)
+            .then(r=>r.json())
+            .then((respuesta)=>{
+                 console.log(respuesta);
+                 respuesta.map(
+                     function(actividad, index, array){
+                        datos+="<tr>";
+
+
+                        datos+="<td>"+actividad.id+"</td>";
+                        datos+="<td>"+actividad.nombre_actividad+"</td>";
+                        datos+='<td> <div class="btn-group" role="group"><button type="button" class="btn btn-info" onclick="aplicacion.Editar('+actividad.id+')" >EDITAR</button><button type="button" class="btn btn-danger" onclick="aplicacion.Borrar('+actividad.id+')" >ELIMINAR</button></div>'+'</td>';
+
+
+                        datos+="</tr>";
+                     }
+                 ); 
+                 return this.actividades.innerHTML=datos;
+            })
+            .catch(console.log);
+
+            //datos="<tr><td>1</td><td>FELIPE</td><td>FELIPE@MAIL.COM</td><td>EDITAR | BORRAR</td></tr>";
+            
+        };
+
+        this.Agregar = function(){
+            console.log(nombre_actividad.value);
+           
+
+            var datosEnviar = {nombre_actividad:this.nombre_actividad.value}
+
+            fetch(url+"?insertar=1",{method:"POST", body:JSON.stringify(datosEnviar)})
+            .then(respuesta=>respuesta.json())
+            .then((datosRespuesta)=>{
+                console.log("insertados");
+                this.Leer();
+                
+            })
+            .catch(console.log);
+          
+        };
+        this.Borrar=function(id){
+            console.log(id);
+            if(window.confirm("¿ Eliminar este registro ?")){
+
+            fetch(url+"?borrar="+id)
+            .then(respuesta=>respuesta.json())
+            .then((datosRespuesta)=>{
+                
+                this.Leer();
+            })
+            .catch(console.log);
+        }
+
+        };
+        this.Editar=function(id){
+            console.log(id);
+
+            fetch(url+"?consultar="+id)
+            .then(respuesta=>respuesta.json())
+            .then((datosRespuesta)=>{
+                
+                console.log(datosRespuesta);
+                this.idEditar.value=datosRespuesta[0]['id'];
+                this.actividadEditar.value=datosRespuesta[0]['nombre_actividad'];
+             
+            })    
+            .catch(console.log);
+
+
+            modaledit.show();
+
+        };
+
+        
+
+        this.Actualizar=function(){
+
+            var datosEnviar = {id:this.idEditar.value, nombre_actividad:this.actividadEditar.value}
+
+            fetch(url+"?actualizar=1",{method:"POST", body:JSON.stringify(datosEnviar)})
+            .then(respuesta=>respuesta.json())
+            .then((datosRespuesta)=>{
+                console.log("Actualizar");
+                this.Leer();
+            })
+            .catch(console.log);
+            modaledit.hide();
+            
+        }
+    }
+
+    aplicacion.Leer();
+
+
+</script>
+
+
+
+
+
+</body>
+
+</html>
+
+
+
+
+
